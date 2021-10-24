@@ -1,7 +1,7 @@
 import argparse
 import os
 
-import ConfigFactory as ConfigFactory
+from pyhocon import ConfigFactory
 import numpy as np
 import torch
 from torch import optim
@@ -9,9 +9,10 @@ from torch import optim
 from data_iterator import get_train_test_data
 from models import Net
 from stats import Stats
+import torch.nn as nn
 
 classes = ['positive', 'negative']
-
+criterion = nn.CrossEntropyLoss()
 
 def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, class_total, class_correct):
     stats.summary_writer.add_scalar('test/loss', total_loss, epoch)
