@@ -6,13 +6,14 @@ import numpy as np
 import torch
 from torch import optim
 
-from data_iterator import get_train_test_data
+from data_iterator import read_data_from_files, get_data_for_training
+
 from models import Net
 from stats import Stats
 import torch.nn as nn
 
 classes = ['positive', 'negative']
-criterion = nn.CrossEntropyLoss()
+
 
 def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, class_total, class_correct):
     stats.summary_writer.add_scalar('test/loss', total_loss, epoch)
@@ -30,7 +31,7 @@ def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, clas
                                         epoch)
 
 
-def calculate_model_results(test_labels, outputs, total, correct, total_loss, class_total, class_correct):
+def calculate_model_results(criterion, test_labels, outputs, total, correct, total_loss, class_total, class_correct):
     _, predicted = torch.max(outputs.detach(), 1)
     test_labels_tensor = torch.as_tensor(test_labels)
 
@@ -45,7 +46,7 @@ def calculate_model_results(test_labels, outputs, total, correct, total_loss, cl
         class_total[label] += 1
 
 
-def eval_test_data(net, test_loader, stats, epoch):
+def eval_test_data(net, test_loader, stats, epoch, criterion):
     with torch.no_grad():
         correct, total, total_loss = 0, 0, 0
         class_correct, class_total = [0] * len(classes), [0] * len(classes)
@@ -53,7 +54,7 @@ def eval_test_data(net, test_loader, stats, epoch):
         for test_data in test_loader:
             test_inputs, test_labels = test_data
             outputs = net(test_inputs)
-            calculate_model_results(test_labels, outputs, total, correct, total_loss, class_total,
+            calculate_model_results(criterion, test_labels, outputs, total, correct, total_loss, class_total,
                                     class_correct)
 
         # save to tensorboard object
@@ -73,9 +74,14 @@ def train(model_path, config):
     else:
         optimizer = optim.SGD(net.parameters(), lr=lr)
 
-    train_loader, test_loader = get_train_test_data(batch_size)
+    # get the data
+    data_text, data_label = read_data_from_files()
+    train_loader, test_loader = get_data_for_training(data_text, data_label)
     print('train_loader len is {}'.format(len(train_loader.dataset)))
     print('test_loader len is {}'.format(len(test_loader.dataset)))
+
+    # choose a loss function
+    criterion = nn.CrossEntropyLoss()
 
     stats_keys = ['loss']
     print_step = 1
@@ -103,10 +109,10 @@ def train(model_path, config):
             if epoch % config['checkpoint_every'] == 0:
                 net.save(os.path.join(model_path, '%d.ckpt' % epoch))
 
-            eval_test_data(net, test_loader, stats, epoch)
+            eval_test_data(net, test_loader, stats, epoch, criterion)
 
 
-def main():
+def get_training_params():
     parser = argparse.ArgumentParser()
     parser.add_argument('config', help='config args for train model')
     parser.add_argument('--config-file', default=os.path.join(os.getcwd(), 'config.conf'))
@@ -116,8 +122,9 @@ def main():
     config = ConfigFactory.parse_file(args.config_file)[args.config]
     if not os.path.exists(model_path):
         os.makedirs(model_path)
-    train(model_path, config)
+    return model_path, config
 
 
 if __name__ == '__main__':
-    main()
+    model_path, config = get_training_params()
+    train(model_path, config)
