@@ -8,10 +8,12 @@ from torch import optim
 
 from data_iterator import read_data_from_files, get_data_for_training
 
-from models import Net
 from stats import Stats
 import torch.nn as nn
 
+import importlib
+
+module = importlib.import_module('models')
 classes = ['positive', 'negative']
 
 
@@ -26,7 +28,6 @@ def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, clas
 
     for i in range(len(classes)):
         stats.summary_writer.add_scalar('test/correct_%s' % classes[i], class_correct[i], epoch)
-        print(class_total[i], i)
         stats.summary_writer.add_scalar('test/acc_%s' % classes[i], 100 * class_correct[i] / class_total[i],
                                         epoch)
 
@@ -44,6 +45,7 @@ def calculate_model_results(criterion, test_labels, outputs, total, correct, tot
         label = test_labels_tensor[i]
         class_correct[label] += c[i].item()
         class_total[label] += 1
+    return total, correct, total_loss, class_correct, class_total
 
 
 def eval_test_data(net, test_loader, stats, epoch, criterion):
@@ -52,17 +54,19 @@ def eval_test_data(net, test_loader, stats, epoch, criterion):
         class_correct, class_total = [0] * len(classes), [0] * len(classes)
 
         for test_data in test_loader:
-            test_inputs, test_labels = test_data
+            test_inputs, test_labels = test_data['encoded_gene'], test_data['label']
             outputs = net(test_inputs)
-            calculate_model_results(criterion, test_labels, outputs, total, correct, total_loss, class_total,
-                                    class_correct)
+            total, correct, total_loss, class_correct, class_total = calculate_model_results(criterion, test_labels,
+                                                                                             outputs, total, correct,
+                                                                                             total_loss, class_total,
+                                                                                             class_correct)
 
         # save to tensorboard object
         save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, class_total, class_correct)
 
 
 def train(model_path, config):
-    net = Net()
+    net = getattr(module, config['model'])()
 
     lr = config['learning_rate']
     epochs = config['epochs']
@@ -91,7 +95,7 @@ def train(model_path, config):
 
         for data in train_loader:
             step += 1
-            inputs, inputs_labels = data
+            inputs, inputs_labels = data['encoded_gene'], data['label']
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -106,10 +110,10 @@ def train(model_path, config):
             stats.summary_writer.add_scalar('train/loss', loss, step)
 
             net.eval()
-            if epoch % config['checkpoint_every'] == 0:
-                net.save(os.path.join(model_path, '%d.ckpt' % epoch))
+            if step % config['checkpoint_every'] == 0:
+                torch.save(net.state_dict(), os.path.join(model_path, '%d.ckpt' % step))
 
-            eval_test_data(net, test_loader, stats, epoch, criterion)
+            eval_test_data(net, test_loader, stats, step, criterion)
 
 
 def get_training_params():
