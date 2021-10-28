@@ -101,7 +101,7 @@ def eval_test_data(net, test_loader, stats, epoch, criterion):
             y_pred = torch.cat((y_pred, torch.argmax(outputs.detach(), dim=1)))
 
         # print avg batch loss
-        avg_loss = round(running_loss / (len(test_loader) / config['batch_size']), 4)
+        avg_loss = round(running_loss / (len(test_loader)), 4)
         print(f"test loss: {avg_loss}")
 
         # get metrics
@@ -172,7 +172,7 @@ def train(model_path, config):
             # print statistics of train
             stats.summary_writer.add_scalar('train/batch_loss', loss, step)
 
-        avg_epoch_loss = round(running_loss / (len(train_loader) / batch_size), 4)
+        avg_epoch_loss = round(running_loss / len(train_loader), 4)
         stats.summary_writer.add_scalar('train/avg_epoch_loss', avg_epoch_loss, step)
         print(f"Epoch {epoch + 1}:")
         print(f"train loss: {avg_epoch_loss}")
