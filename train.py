@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from pyhocon import ConfigFactory
+from pyhocon import ConfigFactory, HOCONConverter
 import numpy as np
 import torch
 from torch import optim
@@ -21,6 +21,7 @@ RANDOM_SEED = 0
 np.random.seed(RANDOM_SEED)
 torch.manual_seed(RANDOM_SEED)
 
+
 def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, class_total, class_correct):
     stats.summary_writer.add_scalar('test/loss', total_loss, epoch)
     stats.summary_writer.add_scalar('test/acc', 100 * correct / total, epoch)
@@ -31,6 +32,18 @@ def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, clas
     print('weight Accuracy of the model: {} % after {} epochs'.format(round(w_acc, 2), epoch))
     print()
 
+    # print results to txt file
+    permission = 'a'
+    if epoch == 1:
+        permission = 'w'
+    with open(f"{model_path}/test_results.txt", permission) as f:
+        print('Test Accuracy of the model: {} % after {} epochs'.format(
+            round(100 * correct / total, 2), epoch), file=f)
+        print('weight Accuracy of the model: {} % after {} epochs'.format(round(w_acc, 2), epoch),
+              file=f)
+        print()
+
+    # to tensor board
     for i in range(len(classes)):
         stats.summary_writer.add_scalar('test/correct_%s' % classes[i], class_correct[i], epoch)
         stats.summary_writer.add_scalar('test/acc_%s' % classes[i], 100 * class_correct[i] / class_total[i],
@@ -88,6 +101,7 @@ def train(model_path, config):
     train_loader, test_loader = get_data_for_training(data_text, data_label)
     print('train_loader len is {}'.format(len(train_loader.dataset)))
     print('test_loader len is {}'.format(len(test_loader.dataset)))
+    print("#########################################")
 
     # choose a loss function
     criterion = nn.CrossEntropyLoss()
@@ -132,6 +146,12 @@ def get_training_params():
     config = ConfigFactory.parse_file(args.config_file)[args.config]
     if not os.path.exists(model_path):
         os.makedirs(model_path)
+
+    # save model config file
+    with open(f"{model_path}/{args.config}_config.conf", "w") as f:
+        f.write(f'{args.config}=')
+        f.write(HOCONConverter.to_json(config))
+
     return model_path, config
 
 
