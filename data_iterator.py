@@ -7,6 +7,8 @@ from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 
 BATCH_SIZE = 64
 
+PROTEIN_ALPHABET = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
+
 
 def read_data_from_files():
     with open('neg_A0201.txt', 'r') as f:
@@ -68,8 +70,5 @@ class PeptidesDataset(Dataset):
 
     @staticmethod
     def one_hot_encoder(text):
-        alphabet = string.ascii_uppercase
-        encoding = torch.Tensor([[0 if char != letter else 1 for char in alphabet] for letter in text])
+        encoding = torch.Tensor([[0 if char != letter else 1 for char in PROTEIN_ALPHABET] for letter in text])
         return encoding
-
-
