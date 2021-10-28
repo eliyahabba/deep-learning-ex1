@@ -14,7 +14,7 @@ from stats import Stats
 module = importlib.import_module('models')
 
 RANDOM_SEED = 0
-classes = ['detect', 'not detect']
+classes = ['not detect', 'detect']
 
 
 def define_random_seed():
@@ -138,8 +138,9 @@ def train(model_path, config):
             # stats.summary_writer.add_scalar('train/running_loss', loss, step)
 
         net.eval()
-        if step % config['checkpoint_every'] == 0:
-            torch.save(net.state_dict(), os.path.join(model_path, '%d.ckpt' % step))
+        # if step % config['checkpoint_every'] == 0:
+        #     torch.save(net, os.path.join(model_path, '%d.epochs_ckpt' % epoch))
+        torch.save(net, os.path.join(model_path, '%d.epochs_ckpt' % epoch))
 
         eval_test_data(net=net, test_loader=test_loader, stats=stats, epoch=epoch + 1,
                        criterion=criterion)
