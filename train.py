@@ -10,19 +10,18 @@ from torch import optim
 
 from data_iterator import read_data_from_files, get_data_for_training
 from stats import Stats
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, \
+from sklearn.metrics import accuracy_score, confusion_matrix, \
     f1_score, recall_score, precision_score, balanced_accuracy_score
 
 
 module = importlib.import_module('models')
 
-RANDOM_SEED = 0
 classes = ['detect', 'not detect']
 
 
-def define_random_seed():
-    np.random.seed(RANDOM_SEED)
-    torch.manual_seed(RANDOM_SEED)
+def define_random_seed(seed):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
 
 # def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, class_total, class_correct):
 #     stats.summary_writer.add_scalar('test/loss', total_loss, epoch)
@@ -40,17 +39,6 @@ def define_random_seed():
 #         stats.summary_writer.add_scalar('test/acc_%s' % classes[i], 100 * class_correct[i] / class_total[i],
 #                                         epoch)
 
-def save_test_metrics_to_tensorboard(stats, epoch, loss, metrics):
-    stats.summary_writer.add_scalar('test/loss', loss, epoch)
-    stats.summary_writer.add_scalar('test/acc', metrics['acc'], epoch)
-    stats.summary_writer.add_scalar('test/acc_0', metrics['acc_0'], epoch)
-    stats.summary_writer.add_scalar('test/acc_1', metrics['acc_1'], epoch)
-    stats.summary_writer.add_scalar('test/weight_acc', metrics['weight_acc'], epoch)
-    stats.summary_writer.add_scalar('test/recall', metrics['recall'], epoch)
-    stats.summary_writer.add_scalar('test/precision', metrics['precision'], epoch)
-    stats.summary_writer.add_scalar('test/f1', metrics['f1'], epoch)
-
-
 # def calculate_model_results(criterion, test_labels, outputs, total, correct, total_loss, class_total, class_correct):
 #     _, predicted = torch.max(outputs.detach(), 1)
 #     test_labels_tensor = torch.as_tensor(test_labels)
@@ -65,6 +53,38 @@ def save_test_metrics_to_tensorboard(stats, epoch, loss, metrics):
 #         class_correct[label] += c[i].item()
 #         class_total[label] += 1
 #     return total, correct, total_loss, class_correct, class_total
+
+
+def save_test_metrics_to_tensorboard(stats, epoch, loss, metrics):
+    stats.summary_writer.add_scalar('test/loss', loss, epoch)
+    stats.summary_writer.add_scalar('test/acc', metrics['acc'], epoch)
+    stats.summary_writer.add_scalar('test/acc_0', metrics['acc_0'], epoch)
+    stats.summary_writer.add_scalar('test/acc_1', metrics['acc_1'], epoch)
+    stats.summary_writer.add_scalar('test/weight_acc', metrics['weight_acc'], epoch)
+    stats.summary_writer.add_scalar('test/recall', metrics['recall'], epoch)
+    stats.summary_writer.add_scalar('test/precision', metrics['precision'], epoch)
+    stats.summary_writer.add_scalar('test/f1', metrics['f1'], epoch)
+
+
+def save_test_metrics_to_file(epoch, loss, metrics):
+    # print results to txt file
+    permission = 'a'
+    # if epoch == 1:
+    #     permission = 'w'
+    with open(f"{model_path}/results.txt", permission) as f:
+        # print(f"Epoch {epoch}:", file=f)
+        print(f"test loss: {loss}", file=f)
+        print(metrics, file=f)
+
+
+def save_train_loss_to_file(epoch, loss):
+    # print results to txt file
+    permission = 'a'
+    if epoch == 1:
+        permission = 'w'
+    with open(f"{model_path}/results.txt", permission) as f:
+        print(f"Epoch {epoch}:", file=f)
+        print(f"train loss: {loss}", file=f)
 
 
 def eval_test_data(net, test_loader, stats, epoch, criterion):
@@ -82,7 +102,6 @@ def eval_test_data(net, test_loader, stats, epoch, criterion):
 
         # print avg batch loss
         avg_loss = round(running_loss / (len(test_loader) / config['batch_size']), 4)
-        print(f"Epoch {epoch}:")
         print(f"test loss: {avg_loss}")
 
         # get metrics
@@ -95,18 +114,13 @@ def eval_test_data(net, test_loader, stats, epoch, criterion):
                    'precision': round(precision_score(y_true=y_true, y_pred=y_pred), 4),
                    'f1': round(f1_score(y_true=y_true, y_pred=y_pred), 4),
                    'confusion_matrix': conf_mat}
-        print(metrics)
+        print(f"f1: {metrics['f1']}")
+        print(f"acc: {metrics['acc']}")
         print()
 
-        # print results to txt file
-        permission = 'a'
-        if epoch == 1:
-            permission = 'w'
-        with open(f"{model_path}/test_results.txt", permission) as f:
-            print(f"Epoch {epoch}:", file=f)
-            print(f"test loss: {avg_loss}", file=f)
-            print(metrics, file=f)
+        save_test_metrics_to_file(epoch, avg_loss, metrics)
         save_test_metrics_to_tensorboard(stats, epoch, avg_loss, metrics)
+
 
 def train(model_path, config):
     net = getattr(module, config['model'])()
@@ -117,12 +131,13 @@ def train(model_path, config):
 
     # choose the optimizer
     if config['optimizer'] == 'adam':
-        optimizer = optim.Adam(params=net.parameters(), lr=lr)
+        optimizer = optim.Adam(params=net.parameters(), lr=lr, weight_decay=config['weight_decay'])
     else:
         optimizer = optim.SGD(net.parameters(), lr=lr, momentum=config['momentum'])
 
     # read the batch_data from the files
     data_text, data_label = read_data_from_files()
+
     # Preparing the batch_data for training
     train_loader, test_loader = get_data_for_training(data_text, data_label, batch_size)
     print('train_loader len is {}'.format(len(train_loader.dataset)))
@@ -138,6 +153,7 @@ def train(model_path, config):
     stats = Stats(stats_keys, log_dir=model_path, print_step=print_step, prefix='train/')
     step = 0
     for epoch in range(epochs):
+        running_loss = 0.0
         for batch_data in train_loader:
             # batch_data dim = batch_size * 9 * 26
             step += 1
@@ -151,18 +167,22 @@ def train(model_path, config):
             loss = criterion(outputs, inputs_labels)
             loss.backward()
             optimizer.step()
+            running_loss += loss.item()
 
             # print statistics of train
             stats.summary_writer.add_scalar('train/batch_loss', loss, step)
-            # TODO running loss
-            # stats.summary_writer.add_scalar('train/running_loss', loss, step)
+
+        avg_epoch_loss = round(running_loss / (len(train_loader) / batch_size), 4)
+        stats.summary_writer.add_scalar('train/avg_epoch_loss', avg_epoch_loss, step)
+        print(f"Epoch {epoch + 1}:")
+        print(f"train loss: {avg_epoch_loss}")
+        save_train_loss_to_file(epoch + 1, avg_epoch_loss)
 
         net.eval()
         if step % config['checkpoint_every'] == 0:
             torch.save(net.state_dict(), os.path.join(model_path, '%d.ckpt' % step))
 
         eval_test_data(net, test_loader, stats, epoch=epoch + 1, criterion=criterion)
-
 
 def get_training_params():
     parser = argparse.ArgumentParser()
@@ -184,6 +204,6 @@ def get_training_params():
 
 
 if __name__ == '__main__':
-    define_random_seed()
+    # define_random_seed(0)
     model_path, config = get_training_params()
     train(model_path, config)
