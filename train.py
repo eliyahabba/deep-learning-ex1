@@ -32,8 +32,8 @@ def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, clas
     print(f'weight Accuracy of the model: {w_acc:.2f} after {epoch} epochs')
 
     for i in range(len(classes)):
-        stats.summary_writer.add_scalar('test/correct_%s' % classes[i], class_correct[i], epoch)
-        stats.summary_writer.add_scalar('test/acc_%s' % classes[i], 100 * class_correct[i] / class_total[i],
+        stats.summary_writer.add_scalar('test/correct %s' % classes[i], class_correct[i], epoch)
+        stats.summary_writer.add_scalar('test/acc %s' % classes[i], 100 * class_correct[i] / class_total[i],
                                         epoch)
 
 
