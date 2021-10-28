@@ -54,7 +54,7 @@ def get_sampler(y_train):
 
 
 class PeptidesDataset(Dataset):
-    def __init__(self, data_text, data_labels):
+    def __init__(self, data_text, data_labels=None):
         self.data_text = data_text
         self.data_labels = data_labels
 
