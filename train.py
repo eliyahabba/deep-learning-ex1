@@ -16,6 +16,10 @@ import importlib
 module = importlib.import_module('models')
 classes = ['positive', 'negative']
 
+# determine seed
+RANDOM_SEED = 0
+np.random.seed(RANDOM_SEED)
+torch.manual_seed(RANDOM_SEED)
 
 def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, class_total, class_correct):
     stats.summary_writer.add_scalar('test/loss', total_loss, epoch)
@@ -23,8 +27,9 @@ def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, clas
     stats.summary_writer.add_scalar('test/correct', correct, epoch)
     w_acc = np.average([100 * class_correct[i] / class_total[i] for i in range((len(classes)))])
     stats.summary_writer.add_scalar('test/weight_acc', w_acc, epoch)
-    print('Test Accuracy of the model: {} % after %{} epochs'.format(100 * correct / total, epoch))
-    print('weight Accuracy of the model: {} % after %{} epochs'.format(w_acc, epoch))
+    print('Test Accuracy of the model: {} % after {} epochs'.format(round(100 * correct / total, 2), epoch))
+    print('weight Accuracy of the model: {} % after {} epochs'.format(round(w_acc, 2), epoch))
+    print()
 
     for i in range(len(classes)):
         stats.summary_writer.add_scalar('test/correct_%s' % classes[i], class_correct[i], epoch)
@@ -109,11 +114,12 @@ def train(model_path, config):
             # print statistics of train
             stats.summary_writer.add_scalar('train/loss', loss, step)
 
-            net.eval()
-            if step % config['checkpoint_every'] == 0:
-                torch.save(net.state_dict(), os.path.join(model_path, '%d.ckpt' % step))
+        net.eval()
+        if step % config['checkpoint_every'] == 0:
+            torch.save(net.state_dict(), os.path.join(model_path, '%d.ckpt' % step))
 
-            eval_test_data(net, test_loader, stats, step, criterion)
+        eval_test_data(net=net, test_loader=test_loader, stats=stats, epoch=epoch + 1,
+                       criterion=criterion)
 
 
 def get_training_params():
