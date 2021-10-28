@@ -44,7 +44,7 @@ def save_test_metrics_to_tensorboard(stats, epoch, loss, metrics):
     stats.summary_writer.add_scalar('test/loss', loss, epoch)
     stats.summary_writer.add_scalar('test/acc', metrics['acc'], epoch)
     stats.summary_writer.add_scalar('test/acc_0', metrics['acc_0'], epoch)
-    stats.summary_writer.add_scalar('test/acc_0', metrics['acc_1'], epoch)
+    stats.summary_writer.add_scalar('test/acc_1', metrics['acc_1'], epoch)
     stats.summary_writer.add_scalar('test/weight_acc', metrics['weight_acc'], epoch)
     stats.summary_writer.add_scalar('test/recall', metrics['recall'], epoch)
     stats.summary_writer.add_scalar('test/precision', metrics['precision'], epoch)
