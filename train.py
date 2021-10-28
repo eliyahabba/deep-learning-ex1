@@ -17,14 +17,9 @@ RANDOM_SEED = 0
 classes = ['not detect', 'detect']
 
 
-def define_random_seed():
+def determine_random_seed():
     np.random.seed(RANDOM_SEED)
     torch.manual_seed(RANDOM_SEED)
-
-# determine seed
-RANDOM_SEED = 0
-np.random.seed(RANDOM_SEED)
-torch.manual_seed(RANDOM_SEED)
 
 
 def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, class_total, class_correct):
@@ -166,6 +161,6 @@ def get_training_params():
 
 
 if __name__ == '__main__':
-    define_random_seed()
+    determine_random_seed()
     model_path, config = get_training_params()
     train(model_path, config)
