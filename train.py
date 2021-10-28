@@ -1,20 +1,25 @@
 import argparse
+import importlib
 import os
 
 from pyhocon import ConfigFactory, HOCONConverter
 import numpy as np
 import torch
+import torch.nn as nn
 from torch import optim
 
 from data_iterator import read_data_from_files, get_data_for_training
-
 from stats import Stats
-import torch.nn as nn
-
-import importlib
 
 module = importlib.import_module('models')
-classes = ['positive', 'negative']
+
+RANDOM_SEED = 0
+classes = ['detect', 'not detect']
+
+
+def define_random_seed():
+    np.random.seed(RANDOM_SEED)
+    torch.manual_seed(RANDOM_SEED)
 
 # determine seed
 RANDOM_SEED = 0
@@ -45,8 +50,8 @@ def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, clas
 
     # to tensor board
     for i in range(len(classes)):
-        stats.summary_writer.add_scalar('test/correct_%s' % classes[i], class_correct[i], epoch)
-        stats.summary_writer.add_scalar('test/acc_%s' % classes[i], 100 * class_correct[i] / class_total[i],
+        stats.summary_writer.add_scalar('test/correct %s' % classes[i], class_correct[i], epoch)
+        stats.summary_writer.add_scalar('test/acc %s' % classes[i], 100 * class_correct[i] / class_total[i],
                                         epoch)
 
 
@@ -94,11 +99,12 @@ def train(model_path, config):
     if config['optimizer'] == 'adam':
         optimizer = optim.Adam(params=net.parameters(), lr=lr)
     else:
-        optimizer = optim.SGD(net.parameters(), lr=lr)
+        optimizer = optim.SGD(net.parameters(), lr=lr, momentum=config['momentum'])
 
-    # get the data
+    # read the batch_data from the files
     data_text, data_label = read_data_from_files()
-    train_loader, test_loader = get_data_for_training(data_text, data_label)
+    # Preparing the batch_data for training
+    train_loader, test_loader = get_data_for_training(data_text, data_label, batch_size)
     print('train_loader len is {}'.format(len(train_loader.dataset)))
     print('test_loader len is {}'.format(len(test_loader.dataset)))
     print("#########################################")
@@ -106,27 +112,30 @@ def train(model_path, config):
     # choose a loss function
     criterion = nn.CrossEntropyLoss()
 
+    # TODO change to batch loss
     stats_keys = ['loss']
     print_step = 1
     stats = Stats(stats_keys, log_dir=model_path, print_step=print_step, prefix='train/')
     step = 0
     for epoch in range(epochs):
-
-        for data in train_loader:
+        for batch_data in train_loader:
+            # batch_data dim = batch_size * 9 * 26
             step += 1
-            inputs, inputs_labels = data['encoded_gene'], data['label']
+            inputs, inputs_labels = batch_data['encoded_gene'], batch_data['label']
 
             # zero the parameter gradients
             optimizer.zero_grad()
             # forward + backward + optimize
-            outputs = net(inputs.float())
+            outputs = net(inputs)
 
             loss = criterion(outputs, inputs_labels)
             loss.backward()
             optimizer.step()
 
             # print statistics of train
-            stats.summary_writer.add_scalar('train/loss', loss, step)
+            stats.summary_writer.add_scalar('train/batch_loss', loss, step)
+            # TODO running loss
+            # stats.summary_writer.add_scalar('train/running_loss', loss, step)
 
         net.eval()
         if step % config['checkpoint_every'] == 0:
@@ -156,5 +165,6 @@ def get_training_params():
 
 
 if __name__ == '__main__':
+    define_random_seed()
     model_path, config = get_training_params()
     train(model_path, config)
