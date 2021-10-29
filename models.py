@@ -1,5 +1,5 @@
 import torch.nn as nn
-
+import torch
 ###############################################################################
 #from https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html
 ###############################################################################
@@ -21,6 +21,36 @@ class NeuralNetwork(nn.Module):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
+
+
+class BigNeuralNetwork(nn.Module):
+    def __init__(self):
+        super(BigNeuralNetwork, self).__init__()
+        self.flatten = nn.Flatten()
+        self.linear_relu_stack = nn.Sequential(
+            nn.Linear(9*20, 1024),
+            nn.ReLU(),
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Linear(16, 2),
+        )
+
+    def forward(self, x):
+        x = self.flatten(x)
+        logits = self.linear_relu_stack(x)
+        return logits
+
+
 
 class NeuralNetworkBCEL(nn.Module):
     def __init__(self):
