@@ -15,9 +15,9 @@ from sklearn.metrics import accuracy_score, confusion_matrix, \
 
 
 module = importlib.import_module('models')
-
-classes = ['detect', 'not detect']
-
+	
+RANDOM_SEED = 0
+classes = ['not detect', 'detect']
 
 def define_random_seed(seed):
     np.random.seed(seed)
@@ -179,8 +179,10 @@ def train(model_path, config):
         save_train_loss_to_file(epoch + 1, avg_epoch_loss)
 
         net.eval()
-        if step % config['checkpoint_every'] == 0:
-            torch.save(net.state_dict(), os.path.join(model_path, '%d.ckpt' % step))
+        torch.save(net, os.path.join(model_path, '%d.epochs_ckpt' % epoch))
+
+#        if step % config['checkpoint_every'] == 0:
+#            torch.save(net.state_dict(), os.path.join(model_path, '%d.ckpt' % step))
 
         eval_test_data(net, test_loader, stats, epoch=epoch + 1, criterion=criterion)
 

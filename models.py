@@ -21,3 +21,50 @@ class NeuralNetwork(nn.Module):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
+
+
+class BinaryClassification(nn.Module):
+    def __init__(self):
+        super(BinaryClassification, self).__init__()
+        # Number of input features is 12.
+        self.flatten = nn.Flatten()
+        self.layer_1 = nn.Linear(9*26, 64)
+        self.layer_2 = nn.Linear(64, 64)
+        self.layer_out = nn.Linear(64, 2)
+
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(p=0.1)
+        self.batchnorm1 = nn.BatchNorm1d(64)
+        self.batchnorm2 = nn.BatchNorm1d(64)
+
+    def forward(self, inputs):
+        x = self.relu(self.layer_1(self.flatten(inputs)))
+        x = self.batchnorm1(x)
+        x = self.relu(self.layer_2(x))
+        x = self.batchnorm2(x)
+        x = self.dropout(x)
+        x = self.layer_out(x)
+
+        return x
+
+
+class BinaryClassificationOneLayer(nn.Module):
+    def __init__(self):
+        super(BinaryClassificationOneLayer, self).__init__()
+        # Number of input features is 12.
+        self.flatten = nn.Flatten()
+        self.layer_1 = nn.Linear(9*26, 64)
+        self.layer_out = nn.Linear(64, 2)
+
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(p=0.1)
+        self.batchnorm1 = nn.BatchNorm1d(64)
+        self.batchnorm2 = nn.BatchNorm1d(64)
+
+    def forward(self, inputs):
+        x = self.relu(self.layer_1(self.flatten(inputs)))
+        x = self.batchnorm1(x)
+        x = self.dropout(x)
+        x = self.layer_out(x)
+
+        return x
