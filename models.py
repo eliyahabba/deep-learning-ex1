@@ -1,6 +1,4 @@
-import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 ###############################################################################
 #from https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html

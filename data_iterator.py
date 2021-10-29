@@ -5,7 +5,6 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 
-BATCH_SIZE = 64
 
 PROTEIN_ALPHABET = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
 
@@ -26,7 +25,7 @@ def read_data_from_files():
     return data_text, data_label
 
 
-def get_data_for_training(data_text, data_label, batch_size=BATCH_SIZE):
+def get_data_for_training(data_text, data_label, batch_size):
     # train_test_split
     x_train, x_test, y_train, y_test = train_test_split(data_text, data_label, test_size=0.10, random_state=42)
 
