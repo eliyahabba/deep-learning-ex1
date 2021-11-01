@@ -2,57 +2,28 @@ import argparse
 import importlib
 import os
 
-from pyhocon import ConfigFactory, HOCONConverter
 import numpy as np
 import torch
 import torch.nn as nn
+from pyhocon import ConfigFactory, HOCONConverter
+from sklearn.metrics import accuracy_score, confusion_matrix, \
+    f1_score, recall_score, precision_score, balanced_accuracy_score
 from torch import optim
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from data_iterator import read_data_from_files, get_data_for_training
 from stats import Stats
-from sklearn.metrics import accuracy_score, confusion_matrix, \
-    f1_score, recall_score, precision_score, balanced_accuracy_score
-
 
 module = importlib.import_module('models')
-	
+
 RANDOM_SEED = 0
 classes = ['not detect', 'detect']
+
 
 def define_random_seed(seed):
     np.random.seed(seed)
     torch.manual_seed(seed)
-
-# def save_test_eval_to_tensorboard(stats, total_loss, correct, total, epoch, class_total, class_correct):
-#     stats.summary_writer.add_scalar('test/loss', total_loss, epoch)
-#     stats.summary_writer.add_scalar('test/acc', 100 * correct / total, epoch)
-#     stats.summary_writer.add_scalar('test/correct', correct, epoch)
-#     w_acc = np.average([100 * class_correct[i] / class_total[i] for i in range((len(classes)))])
-#     stats.summary_writer.add_scalar('test/weight_acc', w_acc, epoch)
-#     print('Test Accuracy of the model: {} % after {} epochs'.format(round(100 * correct / total, 2), epoch))
-#     print('weight Accuracy of the model: {} % after {} epochs'.format(round(w_acc, 2), epoch))
-#     print()
-#
-#     # to tensor board
-#     for i in range(len(classes)):
-#         stats.summary_writer.add_scalar('test/correct_%s' % classes[i], class_correct[i], epoch)
-#         stats.summary_writer.add_scalar('test/acc_%s' % classes[i], 100 * class_correct[i] / class_total[i],
-#                                         epoch)
-
-# def calculate_model_results(criterion, test_labels, outputs, total, correct, total_loss, class_total, class_correct):
-#     _, predicted = torch.max(outputs.detach(), 1)
-#     test_labels_tensor = torch.as_tensor(test_labels)
-#
-#     total += test_labels_tensor.size(0)
-#     correct += (predicted == test_labels_tensor).sum().item()
-#     total_loss += criterion(outputs, test_labels_tensor)
-#
-#     c = (predicted == test_labels_tensor).squeeze()
-#     for i in range(len(test_labels_tensor)):
-#         label = test_labels_tensor[i]
-#         class_correct[label] += c[i].item()
-#         class_total[label] += 1
-#     return total, correct, total_loss, class_correct, class_total
 
 
 def save_test_metrics_to_tensorboard(stats, epoch, loss, metrics):
@@ -87,7 +58,7 @@ def save_train_loss_to_file(epoch, loss):
         print(f"train loss: {loss}", file=f)
 
 
-def eval_test_data(net, test_loader, stats, epoch, criterion):
+def eval_test_data(net, test_loader, stats, epoch, criterion, show_confusion_matrix=False):
     running_loss = 0.0
     y_true = torch.Tensor()
     y_pred = torch.Tensor()
@@ -116,6 +87,13 @@ def eval_test_data(net, test_loader, stats, epoch, criterion):
                    'confusion_matrix': conf_mat}
         print(f"f1: {metrics['f1']}")
         print(f"acc: {metrics['acc']}")
+        if show_confusion_matrix:
+            cm = confusion_matrix(y_true, y_pred)
+            sns.heatmap(cm, annot=True, fmt="d", xticklabels=classes, yticklabels=classes)
+            plt.title(f'confusion_matrix peptides after {epoch} epochs', fontsize=14)  # title with fontsize 20
+            plt.xlabel('Predicted labels', fontsize=15)  # x-axis label with fontsize 15
+            plt.ylabel('True labels', fontsize=15)  # y-axis label with fontsize 15
+            plt.show()
         print()
 
         save_test_metrics_to_file(epoch, avg_loss, metrics)
@@ -180,11 +158,8 @@ def train(model_path, config):
 
         net.eval()
         torch.save(net, os.path.join(model_path, '%d.epochs_ckpt' % epoch))
-
-#        if step % config['checkpoint_every'] == 0:
-#            torch.save(net.state_dict(), os.path.join(model_path, '%d.ckpt' % step))
-
         eval_test_data(net, test_loader, stats, epoch=epoch + 1, criterion=criterion)
+
 
 def get_training_params():
     parser = argparse.ArgumentParser()
