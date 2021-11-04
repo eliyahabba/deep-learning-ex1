@@ -71,3 +71,9 @@ class PeptidesDataset(Dataset):
     def one_hot_encoder(text):
         encoding = torch.Tensor([[0 if char != letter else 1 for char in PROTEIN_ALPHABET] for letter in text])
         return encoding
+
+    @staticmethod
+    def one_hot_decoder(one_hot_tensor):
+        encoding = torch.Tensor([[0 if char != letter else 1 for char in PROTEIN_ALPHABET] for letter in one_hot_tensor])
+        return encoding
+

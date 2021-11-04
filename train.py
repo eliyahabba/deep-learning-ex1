@@ -40,8 +40,6 @@ def save_test_metrics_to_tensorboard(stats, epoch, loss, metrics):
 def save_test_metrics_to_file(epoch, loss, metrics):
     # print results to txt file
     permission = 'a'
-    # if epoch == 1:
-    #     permission = 'w'
     with open(f"{model_path}/results.txt", permission) as f:
         # print(f"Epoch {epoch}:", file=f)
         print(f"test loss: {loss}", file=f)
@@ -66,10 +64,12 @@ def eval_test_data(net, test_loader, stats, epoch, criterion, show_confusion_mat
         for i, test_data in enumerate(test_loader):
             test_inputs, test_labels = test_data['encoded_gene'], test_data['label']
             outputs = net(test_inputs)
-            loss = criterion(outputs, test_labels)
-            running_loss += loss.item()
             y_true = torch.cat((y_true, test_labels))
             y_pred = torch.cat((y_pred, torch.argmax(outputs.detach(), dim=1)))
+            if config['loss'] == 'MSELoss':
+                outputs = torch.argmax(outputs.detach(), dim=1).type(torch.DoubleTensor)
+            loss = criterion(outputs, test_labels)
+            running_loss += loss.item()
 
         # print avg batch loss
         avg_loss = round(running_loss / (len(test_loader)), 4)
@@ -123,7 +123,12 @@ def train(model_path, config):
     print("###########################################################")
 
     # choose a loss function
-    criterion = nn.CrossEntropyLoss()
+    if config['loss'] == 'CrossEntropyLoss':
+        criterion = nn.CrossEntropyLoss()
+    elif config['loss'] == 'MSELoss':
+        criterion = nn.MSELoss()
+    else:
+        raise Exception("not valis loss")
 
     # TODO change to batch loss
     stats_keys = ['loss']
@@ -141,7 +146,10 @@ def train(model_path, config):
             optimizer.zero_grad()
             # forward + backward + optimize
             outputs = net(inputs)
-
+            if config['loss'] == 'MSELoss':
+                outputs = torch.argmax(outputs.detach(), dim=1).type(torch.DoubleTensor)
+                outputs.requires_grad = True
+                inputs_labels = inputs_labels.type(torch.DoubleTensor)
             loss = criterion(outputs, inputs_labels)
             loss.backward()
             optimizer.step()
