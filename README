@@ -1,0 +1,21 @@
+username: eliyahabba, inbalmagar
+name: eliya habba, id:307941450
+name: inbal magar, id: 307928465
+
+Intro To Deep Learning - ex1
+EX: 1
+
+FILES:
+adversarial_example.py -- generate an deteced example for the model.
+data_iterator.py -- read and prepare data for training
+					*Includes augmentations and transformations*
+train.py -- file for model training.
+config.conf -- Training configurations. With the help of the file you can follow the experiments.
+			   In addition, it is possible to control their parameters without changing the code of the training itself.
+
+eval_model.py -- evaluation script.
+stats.py -- Stats file for saving data to tensorboard. (Part of the file was copied from the Internet)
+
+Answers.pdf -- PDF file with answers and explanations.
+README -- this file
+
