@@ -1,0 +1,150 @@
+Epoch 1:
+train loss: 0.4059
+test loss: 0.3447
+{'acc': 0.8443, 'weight_acc': 0.8977, 'acc_0': 0.8303, 'acc_1': 0.965, 'recall': 0.965, 'precision': 0.3977, 'f1': 0.5633, 'confusion_matrix': array([[2045,  418],
+       [  10,  276]], dtype=int64)}
+Epoch 2:
+train loss: 0.2465
+test loss: 0.3012
+{'acc': 0.8636, 'weight_acc': 0.9038, 'acc_0': 0.853, 'acc_1': 0.9545, 'recall': 0.9545, 'precision': 0.4299, 'f1': 0.5928, 'confusion_matrix': array([[2101,  362],
+       [  13,  273]], dtype=int64)}
+Epoch 3:
+train loss: 0.2233
+test loss: 0.2731
+{'acc': 0.8796, 'weight_acc': 0.8957, 'acc_0': 0.8754, 'acc_1': 0.9161, 'recall': 0.9161, 'precision': 0.4605, 'f1': 0.6129, 'confusion_matrix': array([[2156,  307],
+       [  24,  262]], dtype=int64)}
+Epoch 4:
+train loss: 0.2092
+test loss: 0.2738
+{'acc': 0.8789, 'weight_acc': 0.8938, 'acc_0': 0.8749, 'acc_1': 0.9126, 'recall': 0.9126, 'precision': 0.4587, 'f1': 0.6105, 'confusion_matrix': array([[2155,  308],
+       [  25,  261]], dtype=int64)}
+Epoch 5:
+train loss: 0.1917
+test loss: 0.2363
+{'acc': 0.8952, 'weight_acc': 0.8828, 'acc_0': 0.8985, 'acc_1': 0.8671, 'recall': 0.8671, 'precision': 0.498, 'f1': 0.6327, 'confusion_matrix': array([[2213,  250],
+       [  38,  248]], dtype=int64)}
+Epoch 6:
+train loss: 0.1758
+test loss: 0.2667
+{'acc': 0.8818, 'weight_acc': 0.8969, 'acc_0': 0.8778, 'acc_1': 0.9161, 'recall': 0.9161, 'precision': 0.4654, 'f1': 0.6172, 'confusion_matrix': array([[2162,  301],
+       [  24,  262]], dtype=int64)}
+Epoch 7:
+train loss: 0.1579
+test loss: 0.2502
+{'acc': 0.8927, 'weight_acc': 0.8768, 'acc_0': 0.8969, 'acc_1': 0.8566, 'recall': 0.8566, 'precision': 0.491, 'f1': 0.6242, 'confusion_matrix': array([[2209,  254],
+       [  41,  245]], dtype=int64)}
+Epoch 8:
+train loss: 0.1511
+test loss: 0.2561
+{'acc': 0.8927, 'weight_acc': 0.8891, 'acc_0': 0.8936, 'acc_1': 0.8846, 'recall': 0.8846, 'precision': 0.4913, 'f1': 0.6317, 'confusion_matrix': array([[2201,  262],
+       [  33,  253]], dtype=int64)}
+Epoch 9:
+train loss: 0.1324
+test loss: 0.2431
+{'acc': 0.9029, 'weight_acc': 0.8778, 'acc_0': 0.9095, 'acc_1': 0.8462, 'recall': 0.8462, 'precision': 0.5204, 'f1': 0.6445, 'confusion_matrix': array([[2240,  223],
+       [  44,  242]], dtype=int64)}
+Epoch 10:
+train loss: 0.1262
+test loss: 0.2622
+{'acc': 0.8978, 'weight_acc': 0.875, 'acc_0': 0.9038, 'acc_1': 0.8462, 'recall': 0.8462, 'precision': 0.5052, 'f1': 0.6327, 'confusion_matrix': array([[2226,  237],
+       [  44,  242]], dtype=int64)}
+Epoch 11:
+train loss: 0.1209
+test loss: 0.23
+{'acc': 0.9054, 'weight_acc': 0.8545, 'acc_0': 0.9188, 'acc_1': 0.7902, 'recall': 0.7902, 'precision': 0.5305, 'f1': 0.6348, 'confusion_matrix': array([[2263,  200],
+       [  60,  226]], dtype=int64)}
+Epoch 12:
+train loss: 0.1113
+test loss: 0.2459
+{'acc': 0.9029, 'weight_acc': 0.8639, 'acc_0': 0.9131, 'acc_1': 0.8147, 'recall': 0.8147, 'precision': 0.5213, 'f1': 0.6357, 'confusion_matrix': array([[2249,  214],
+       [  53,  233]], dtype=int64)}
+Epoch 13:
+train loss: 0.1007
+test loss: 0.2467
+{'acc': 0.9061, 'weight_acc': 0.858, 'acc_0': 0.9188, 'acc_1': 0.7972, 'recall': 0.7972, 'precision': 0.5327, 'f1': 0.6387, 'confusion_matrix': array([[2263,  200],
+       [  58,  228]], dtype=int64)}
+Epoch 14:
+train loss: 0.0933
+test loss: 0.2429
+{'acc': 0.9058, 'weight_acc': 0.8454, 'acc_0': 0.9216, 'acc_1': 0.7692, 'recall': 0.7692, 'precision': 0.5327, 'f1': 0.6295, 'confusion_matrix': array([[2270,  193],
+       [  66,  220]], dtype=int64)}
+Epoch 15:
+train loss: 0.0878
+test loss: 0.242
+{'acc': 0.9098, 'weight_acc': 0.8384, 'acc_0': 0.9285, 'acc_1': 0.7483, 'recall': 0.7483, 'precision': 0.5487, 'f1': 0.6331, 'confusion_matrix': array([[2287,  176],
+       [  72,  214]], dtype=int64)}
+Epoch 16:
+train loss: 0.0821
+test loss: 0.2554
+{'acc': 0.9058, 'weight_acc': 0.8346, 'acc_0': 0.9245, 'acc_1': 0.7448, 'recall': 0.7448, 'precision': 0.5338, 'f1': 0.6219, 'confusion_matrix': array([[2277,  186],
+       [  73,  213]], dtype=int64)}
+Epoch 17:
+train loss: 0.0789
+test loss: 0.2493
+{'acc': 0.9123, 'weight_acc': 0.8197, 'acc_0': 0.9367, 'acc_1': 0.7028, 'recall': 0.7028, 'precision': 0.563, 'f1': 0.6252, 'confusion_matrix': array([[2307,  156],
+       [  85,  201]], dtype=int64)}
+Epoch 18:
+train loss: 0.0741
+test loss: 0.2564
+{'acc': 0.9123, 'weight_acc': 0.829, 'acc_0': 0.9342, 'acc_1': 0.7238, 'recall': 0.7238, 'precision': 0.561, 'f1': 0.6321, 'confusion_matrix': array([[2301,  162],
+       [  79,  207]], dtype=int64)}
+Epoch 19:
+train loss: 0.0671
+test loss: 0.2719
+{'acc': 0.9083, 'weight_acc': 0.8376, 'acc_0': 0.9269, 'acc_1': 0.7483, 'recall': 0.7483, 'precision': 0.5431, 'f1': 0.6294, 'confusion_matrix': array([[2283,  180],
+       [  72,  214]], dtype=int64)}
+Epoch 20:
+train loss: 0.0637
+test loss: 0.258
+{'acc': 0.9127, 'weight_acc': 0.8091, 'acc_0': 0.9399, 'acc_1': 0.6783, 'recall': 0.6783, 'precision': 0.5673, 'f1': 0.6178, 'confusion_matrix': array([[2315,  148],
+       [  92,  194]], dtype=int64)}
+Epoch 21:
+train loss: 0.0662
+test loss: 0.2629
+{'acc': 0.9123, 'weight_acc': 0.8105, 'acc_0': 0.9391, 'acc_1': 0.6818, 'recall': 0.6818, 'precision': 0.5652, 'f1': 0.6181, 'confusion_matrix': array([[2313,  150],
+       [  91,  195]], dtype=int64)}
+Epoch 22:
+train loss: 0.057
+test loss: 0.2751
+{'acc': 0.9094, 'weight_acc': 0.8166, 'acc_0': 0.9338, 'acc_1': 0.6993, 'recall': 0.6993, 'precision': 0.551, 'f1': 0.6163, 'confusion_matrix': array([[2300,  163],
+       [  86,  200]], dtype=int64)}
+Epoch 23:
+train loss: 0.054
+test loss: 0.2777
+{'acc': 0.9094, 'weight_acc': 0.8073, 'acc_0': 0.9363, 'acc_1': 0.6783, 'recall': 0.6783, 'precision': 0.5527, 'f1': 0.6091, 'confusion_matrix': array([[2306,  157],
+       [  92,  194]], dtype=int64)}
+Epoch 24:
+train loss: 0.0496
+test loss: 0.2912
+{'acc': 0.9112, 'weight_acc': 0.8253, 'acc_0': 0.9338, 'acc_1': 0.7168, 'recall': 0.7168, 'precision': 0.5571, 'f1': 0.6269, 'confusion_matrix': array([[2300,  163],
+       [  81,  205]], dtype=int64)}
+Epoch 25:
+train loss: 0.0468
+test loss: 0.2847
+{'acc': 0.9105, 'weight_acc': 0.7986, 'acc_0': 0.9399, 'acc_1': 0.6573, 'recall': 0.6573, 'precision': 0.5595, 'f1': 0.6045, 'confusion_matrix': array([[2315,  148],
+       [  98,  188]], dtype=int64)}
+Epoch 26:
+train loss: 0.0434
+test loss: 0.2972
+{'acc': 0.9109, 'weight_acc': 0.7942, 'acc_0': 0.9415, 'acc_1': 0.6469, 'recall': 0.6469, 'precision': 0.5623, 'f1': 0.6016, 'confusion_matrix': array([[2319,  144],
+       [ 101,  185]], dtype=int64)}
+Epoch 27:
+train loss: 0.0407
+test loss: 0.2926
+{'acc': 0.9112, 'weight_acc': 0.7944, 'acc_0': 0.9419, 'acc_1': 0.6469, 'recall': 0.6469, 'precision': 0.564, 'f1': 0.6026, 'confusion_matrix': array([[2320,  143],
+       [ 101,  185]], dtype=int64)}
+Epoch 28:
+train loss: 0.0397
+test loss: 0.3064
+{'acc': 0.9076, 'weight_acc': 0.7955, 'acc_0': 0.9371, 'acc_1': 0.6538, 'recall': 0.6538, 'precision': 0.5468, 'f1': 0.5955, 'confusion_matrix': array([[2308,  155],
+       [  99,  187]], dtype=int64)}
+Epoch 29:
+train loss: 0.036
+test loss: 0.3176
+{'acc': 0.9058, 'weight_acc': 0.8037, 'acc_0': 0.9326, 'acc_1': 0.6748, 'recall': 0.6748, 'precision': 0.5376, 'f1': 0.5984, 'confusion_matrix': array([[2297,  166],
+       [  93,  193]], dtype=int64)}
+Epoch 30:
+train loss: 0.0362
+test loss: 0.3173
+{'acc': 0.9065, 'weight_acc': 0.7902, 'acc_0': 0.9371, 'acc_1': 0.6434, 'recall': 0.6434, 'precision': 0.5428, 'f1': 0.5888, 'confusion_matrix': array([[2308,  155],
+       [ 102,  184]], dtype=int64)}
