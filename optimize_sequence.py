@@ -20,7 +20,7 @@ def add_grad_to_exmple(encode_pep, eps):
     encode_pep.data = torch.zeros(new_encode_pep.shape).scatter(1, new_encode_pep_argmax.unsqueeze(1), 1.0).data
 
 
-def find_de_pep(ckpt, pep, eps):
+def optimize_sequence(ckpt, pep, eps):
     model = torch.load(ckpt)
     model.eval()
     encode_peptide = [[0. if char != letter else 1. for char in PROTEIN_ALPHABET] for letter in pep]
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     print(f"We start with random peptide: {random_peptide}")
 
     for eps in epsilons:
-        detected_peptide, iterations_counter = find_de_pep(args.ckpt, random_peptide, eps)
+        detected_peptide, iterations_counter = optimize_sequence(args.ckpt, random_peptide, eps)
         for iterations_num, peptide_iter in zip(iterations_counter,
                                                 np.apply_along_axis(lambda x: ''.join(x), 1, detected_peptide)[1:]):
             print(f'After {iterations_num + 1} iteration with eps={eps} the string is {peptide_iter}')
